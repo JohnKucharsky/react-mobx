@@ -1,4 +1,3 @@
-import { memo, useCallback } from 'react'
 import {
   Card,
   Checkbox,
@@ -9,19 +8,13 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material'
+import { computed } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import { RowType } from '@/features/Table/service.ts'
 import { SelectionStore } from '@/features/Table/store.ts'
 
 const TableComponent = observer(
   ({ selectionStore }: { selectionStore: SelectionStore }) => {
-    const handleSelect = useCallback(
-      (id: number) => {
-        selectionStore.handleSelect(id)
-      },
-      [selectionStore],
-    )
-
     return (
       <Card>
         <TableContainer>
@@ -39,10 +32,9 @@ const TableComponent = observer(
             <TableBody>
               {selectionStore.data.map((row) => (
                 <TableRowComponent
+                  selectionStore={selectionStore}
                   key={row.id}
                   row={row}
-                  isSelected={selectionStore.isSelected(row.id)}
-                  handleSelect={handleSelect}
                 />
               ))}
             </TableBody>
@@ -67,22 +59,24 @@ const CheckboxEl = observer(
   },
 )
 
-const TableRowComponent = memo(
+const TableRowComponent = observer(
   ({
+    selectionStore,
     row,
-    isSelected,
-    handleSelect,
   }: {
+    selectionStore: SelectionStore
     row: RowType
-    isSelected: boolean
-    handleSelect: (id: number) => void
   }) => {
+    const isSelectedComputed = computed(() =>
+      selectionStore.isSelected(row.id),
+    ).get()
+
     return (
-      <TableRow selected={isSelected}>
+      <TableRow selected={isSelectedComputed}>
         <TableCell padding="checkbox">
           <Checkbox
-            checked={isSelected}
-            onChange={() => handleSelect(row.id)}
+            checked={isSelectedComputed}
+            onChange={() => selectionStore.handleSelect(row.id)}
           />
         </TableCell>
         <TableCell>{row.name}</TableCell>
