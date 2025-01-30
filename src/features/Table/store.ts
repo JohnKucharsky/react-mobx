@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import { generateRandomData, RowType } from '@/features/Table/service.ts'
 
 export class SelectionStore {
@@ -15,14 +15,10 @@ export class SelectionStore {
 
   handleSelect(id: number) {
     if (this.selected.includes(id)) {
-      runInAction(() => {
-        const itemId = this.selected.indexOf(id)
-        this.selected.splice(itemId, 1)
-      })
+      const itemId = this.selected.indexOf(id)
+      this.selected.splice(itemId, 1)
     } else {
-      runInAction(() => {
-        this.selected.push(id)
-      })
+      this.selected.push(id)
     }
   }
 

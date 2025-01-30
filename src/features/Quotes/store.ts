@@ -37,10 +37,10 @@ export class QuotesStore {
         this.status = 'idle'
       })
     } catch (error) {
+      if (error instanceof Error) {
+        console.error('Failed to fetch quotes', error.message)
+      }
       runInAction(() => {
-        if (error instanceof Error) {
-          console.error('Failed to fetch quotes', error.message)
-        }
         this.status = 'error'
       })
     }
